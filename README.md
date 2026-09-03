@@ -201,6 +201,7 @@ Registros do desenvolvimento
 <img width="3000" height="4000" alt="1000123155" src="https://github.com/user-attachments/assets/6f51c876-77e7-4b5e-a2a0-21c57cfbaff6" />
 <img width="3000" height="4000" alt="1000123153" src="https://github.com/user-attachments/assets/a37cf34b-ec21-447e-9ac3-4df6f3e53a1c" />
 <img width="3000" height="4000" alt="1000123154" src="https://github.com/user-attachments/assets/71a51309-5a94-4e25-bd53-a0dfa39ed4df" />
+<img width="1919" height="1033" alt="image" src="https://github.com/user-attachments/assets/504933e6-f7e5-4aea-85aa-65d38fc334c8" />
 
 
 
