@@ -166,20 +166,24 @@ Diagrama de fluxo
 
 O usuário pode alternar entre as três funções principais do aplicativo utilizando a barra inferior de navegação.
 
-flowchart TD
-    A["RELÓGIO<br/>Tela principal<br/><br/>Horário atual<br/>Próximo alarme<br/>Fuso horário"]
-    
-    B["CRONÔMETRO<br/><br/>Contador<br/>Iniciar / Pausar<br/>Zerar<br/>Última volta"]
-    
-    C["TIMER<br/><br/>Contagem regressiva<br/>5 / 10 / 15 minutos<br/>Campo de minutos<br/>Iniciar / Pausar"]
+RELÓGIO
+   │
+   ├──────────► CRONÔMETRO
+   │
+   └──────────► TIMER
 
-    A -->|"Barra inferior<br/>Crono"| B
-    B -->|"Barra inferior<br/>Timer"| C
-    C -->|"Barra inferior<br/>Relógio"| A
+CRONÔMETRO
+   │
+   ├──────────► RELÓGIO
+   │
+   └──────────► TIMER
 
-    A -->|"Barra inferior<br/>Timer"| C
-    B -->|"Barra inferior<br/>Relógio"| A
-    C -->|"Barra inferior<br/>Crono"| B
+TIMER
+   │
+   ├──────────► RELÓGIO
+   │
+   └──────────► CRONÔMETRO
+
 
 7. Acompanhamento / Progresso
 
