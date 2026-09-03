@@ -1,9 +1,11 @@
 ⏰ Tun Tun Clock
+
 Desenvolvimento de Aplicativos Móveis — Trabalho 1
 
 Disciplina: Desenvolvimento de Aplicativos Móveis
 
 Integrantes:
+
 Daniel Luiz — Relógio
 
 Daniel Rocha — Cronômetro
@@ -17,8 +19,11 @@ O Tun Tun Clock é um aplicativo de controle de tempo desenvolvido em Kotlin uti
 A proposta é reunir três funções principais em um único aplicativo:
 
 Relógio;
+
 Cronômetro;
+
 Timer.
+
 
 O aplicativo foi pensado para pessoas que precisam consultar o horário e controlar períodos de tempo durante atividades como estudos, trabalho, exercícios e tarefas do dia a dia.
 
