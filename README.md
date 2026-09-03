@@ -30,6 +30,7 @@ O aplicativo foi pensado para pessoas que precisam consultar o horário e contro
 A identidade visual utiliza um fundo escuro, cards e tons de roxo, buscando uma interface simples, organizada e fácil de utilizar.
 
 2. Telas desenvolvidas
+
 🕐 Relógio
 
 A tela apresenta:
