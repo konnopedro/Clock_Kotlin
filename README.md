@@ -5,7 +5,9 @@ Disciplina: Desenvolvimento de Aplicativos Móveis
 
 Integrantes:
 Daniel Luiz — Relógio
+
 Daniel Rocha — Cronômetro
+
 Pedro Konno — Timer
 
 1. Sobre o aplicativo
