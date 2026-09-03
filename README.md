@@ -162,49 +162,24 @@ Antes da programação, o grupo realizou o planejamento das telas.
 
 Diagrama de fluxo
 
-┌─────────────────────┐
-│      RELÓGIO        │
-│                     │
-│  Horário atual      │
-│  Próximo alarme     │
-│  Fuso horário       │
-│                     │
-│ [Relógio] [Crono]   │
-│ [Timer]             │
-└──────────┬──────────┘
-           │
-           │ selecionar Crono
-           ▼
-┌─────────────────────┐
-│     CRONÔMETRO      │
-│                     │
-│     00:00:00        │
-│                     │
-│ [VOLTAR] [INICIAR]  │
-│                     │
-│    Última volta     │
-└──────────┬──────────┘
-           │
-           │ selecionar Timer
-           ▼
-┌─────────────────────┐
-│        TIMER        │
-│                     │
-│      15:00:00       │
-│                     │
-│ [5] [10] [15] min   │
-│                     │
-│ [Minutos]           │
-│                     │
-│     [INICIAR]       │
-└──────────┬──────────┘
-           │
-           │ selecionar Relógio
-           ▼
-      ┌───────────┐
-      │  RELÓGIO  │
-      └───────────┘
+3. Fluxo de navegação
 
+O usuário pode alternar entre as três funções principais do aplicativo utilizando a barra inferior de navegação.
+
+flowchart TD
+    A["RELÓGIO<br/>Tela principal<br/><br/>Horário atual<br/>Próximo alarme<br/>Fuso horário"]
+    
+    B["CRONÔMETRO<br/><br/>Contador<br/>Iniciar / Pausar<br/>Zerar<br/>Última volta"]
+    
+    C["TIMER<br/><br/>Contagem regressiva<br/>5 / 10 / 15 minutos<br/>Campo de minutos<br/>Iniciar / Pausar"]
+
+    A -->|"Barra inferior<br/>Crono"| B
+    B -->|"Barra inferior<br/>Timer"| C
+    C -->|"Barra inferior<br/>Relógio"| A
+
+    A -->|"Barra inferior<br/>Timer"| C
+    B -->|"Barra inferior<br/>Relógio"| A
+    C -->|"Barra inferior<br/>Crono"| B
 
 7. Acompanhamento / Progresso
 
@@ -218,11 +193,16 @@ Também foram necessários alguns ajustes entre o mockup e a implementação par
 
 Registros do desenvolvimento
 
-[Inserir prints/fotos do desenvolvimento]
+<img width="899" height="1599" alt="unnamed" src="https://github.com/user-attachments/assets/20a47268-5828-4411-a5f1-45c6abab7a8e" />
+<img width="3000" height="4000" alt="1000123155" src="https://github.com/user-attachments/assets/6f51c876-77e7-4b5e-a2a0-21c57cfbaff6" />
+<img width="3000" height="4000" alt="1000123153" src="https://github.com/user-attachments/assets/a37cf34b-ec21-447e-9ac3-4df6f3e53a1c" />
+<img width="3000" height="4000" alt="1000123154" src="https://github.com/user-attachments/assets/71a51309-5a94-4e25-bd53-a0dfa39ed4df" />
+
+
 
 8. Repositório
 
-GitHub: [Inserir link do repositório]
+GitHub: https://github.com/konnopedro/Clock_Kotlin
 
 9. Conclusão
 
