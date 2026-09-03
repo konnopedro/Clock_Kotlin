@@ -2,426 +2,314 @@ package com.example.tungclock
 
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tungclock.ui.theme.TungClockTheme
 import kotlinx.coroutines.delay
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.ZonedDateTime.now
-import java.time.format.DateTimeFormatter
+
+private val Fundo = Color(0xFF0B0E17)
+private val CardFundo = Color(0xFF171D2B)
+private val Roxo = Color(0xFF9B7CFF)
+private val Azul = Color(0xFF42B9F2)
+private val Texto = Color.White
+private val TextoSecundario = Color(0xFF9CA3B5)
 
 class MainActivity : ComponentActivity() {
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            TungClockTheme {
-
-                var tela by remember { mutableStateOf(0) }
-
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                    ) {
-                        when (tela) {
-                            0 -> Relogio()
-                            1 -> Cronometro()
-                            2 -> Timer()
-                        }
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .background(Color(199, 199, 199, 91))
-                            .fillMaxWidth()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-
-                        Button(
-                            onClick = { tela = 0 },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xB44CAF50),
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text("Relógio")
-                        }
-
-                        Button(
-                            onClick = { tela = 1 },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xAE4CAF50),
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text("Cronômetro")
-                        }
-
-                        Button(
-                            onClick = { tela = 2 },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xA44CAF50),
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text("Timer")
-                        }
-                    }
-                }
+            MaterialTheme {
+                TunTunClock()
             }
         }
     }
-
 }
 
-// --------------------------------------------------
-// RELÓGIO + ALARME
-// --------------------------------------------------
+// ==================== APLICATIVO ====================
+
+@Composable
+fun TunTunClock() {
+
+    var telaAtual by remember { mutableStateOf(0) }
+
+    Scaffold(
+        containerColor = Fundo,
+
+        bottomBar = {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Fundo)
+                    .padding(8.dp),
+
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+
+                TextButton(
+                    onClick = {
+                        telaAtual = 0
+                    }
+                ) {
+                    Text(
+                        text = "◉ Relógio",
+                        color = if (telaAtual == 0)
+                            Roxo
+                        else
+                            TextoSecundario
+                    )
+                }
+
+                TextButton(
+                    onClick = {
+                        telaAtual = 1
+                    }
+                ) {
+                    Text(
+                        text = "◉ Crono",
+                        color = if (telaAtual == 1)
+                            Roxo
+                        else
+                            TextoSecundario
+                    )
+                }
+
+                TextButton(
+                    onClick = {
+                        telaAtual = 2
+                    }
+                ) {
+                    Text(
+                        text = "◉ Timer",
+                        color = if (telaAtual == 2)
+                            Roxo
+                        else
+                            TextoSecundario
+                    )
+                }
+            }
+        }
+    ) { paddingValues ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+
+            when (telaAtual) {
+
+                0 -> Relogio()
+
+                1 -> Crono()
+
+                2 -> Timer()
+            }
+        }
+    }
+}
+
+// ==================== RELÓGIO ====================
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Relogio() {
 
-    val fusos = listOf(
-        "São Paulo" to "America/Sao_Paulo",
-        "Nova York" to "America/New_York",
-        "Los Angeles" to "America/Los_Angeles",
-        "Londres" to "Europe/London",
-        "Paris" to "Europe/Paris",
-        "Tóquio" to "Asia/Tokyo"
-    )
-
-    var fuso by remember { mutableStateOf(fusos[0]) }
-
-    var hora by remember {
+    var horaAtual by remember {
         mutableStateOf(
-            now(ZoneId.of(fusos[0].second))
+            java.time.ZonedDateTime.now(
+                java.time.ZoneId.of("America/Sao_Paulo")
+            )
         )
     }
 
-    var horaAlarme by remember { mutableStateOf("") }
-    var minutoAlarme by remember { mutableStateOf("") }
-    var alarmeAtivo by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
-
-// --------------------------------------------------
-// ATUALIZA O RELÓGIO
-// --------------------------------------------------
-
-    LaunchedEffect(fuso) {
-
+    LaunchedEffect(Unit) {
         while (true) {
+            delay(1000)
 
-            hora = now(
-                ZoneId.of(fuso.second)
+            horaAtual = java.time.ZonedDateTime.now(
+                java.time.ZoneId.of("America/Sao_Paulo")
             )
-
-            delay(1000)
         }
     }
 
-// --------------------------------------------------
-// VERIFICA O ALARME
-// --------------------------------------------------
-
-    LaunchedEffect(alarmeAtivo) {
-
-        while (alarmeAtivo) {
-
-            val agora = now()
-
-            val horaDigitada = horaAlarme.toIntOrNull()
-            val minutoDigitado = minutoAlarme.toIntOrNull()
-
-            if (
-                horaDigitada != null &&
-                minutoDigitado != null &&
-                horaDigitada == agora.hour &&
-                minutoDigitado == agora.minute
-            ) {
-
-                Toast.makeText(
-                    context,
-                    "⏰ Alarme!",
-                    Toast.LENGTH_LONG
-                ).show()
-
-                alarmeAtivo = false
-            }
-
-            delay(1000)
-        }
-    }
+    val hora = horaAtual.format(
+        java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")
+    )
 
     Column(
         modifier = Modifier
-            .background(Color(143, 153, 162, 60))
             .fillMaxSize()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(20.dp)
     ) {
 
         Text(
-            text = "CLOCK.IO",
-            fontSize = 30.sp
+            text = "TUN TUN CLOCK",
+            color = Roxo,
+            fontSize = 14.sp
         )
 
-        Spacer(
-            modifier = Modifier.height(15.dp)
-        )
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = hora.format(
-                DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            ),
-            fontSize = 24.sp
+            text = "Bom dia, meu docinho",
+            color = Texto,
+            fontSize = 15.sp
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = hora.format(
-                DateTimeFormatter.ofPattern("HH:mm:ss")
-            ),
-            fontSize = 48.sp
+            text = "Quinta-feira, 28 de agosto",
+            color = TextoSecundario,
+            fontSize = 13.sp
         )
 
-        Spacer(
-            modifier = Modifier.height(15.dp)
+        Spacer(modifier = Modifier.height(45.dp))
+
+        Text(
+            text = hora,
+            color = Texto,
+            fontSize = 18.sp
         )
 
-        // --------------------------------------------------
-        // ESCOLHER FUSO
-        // --------------------------------------------------
+        Spacer(modifier = Modifier.height(6.dp))
 
-        var menuAberto by remember {
-            mutableStateOf(false)
-        }
-
-        Box {
-
-            Button(
-                onClick = {
-                    menuAberto = true
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0x667A7A7A),
-                    contentColor = Color.White
-                )
-            ) {
-                Text(fuso.first)
-            }
-
-            DropdownMenu(
-                expanded = menuAberto,
-                onDismissRequest = {
-                    menuAberto = false
-                }
-            ) {
-
-                fusos.forEach { fusoItem ->
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(fusoItem.first)
-                        },
-                        onClick = {
-
-                            fuso = fusoItem
-                            menuAberto = false
-                        }
-                    )
-                }
-            }
-        }
-
-        Spacer(
-            modifier = Modifier.height(28.dp)
+        Text(
+            text = "São Paulo, Brasil",
+            color = TextoSecundario,
+            fontSize = 12.sp
         )
 
-        // --------------------------------------------------
-        // ALARME
-        // --------------------------------------------------
+        Spacer(modifier = Modifier.height(30.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .clip(
-                    RoundedCornerShape(16.dp)
-                )
-                .background(
-                    Color(0x667A7A7A)
-                )
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(18.dp)
         ) {
 
-            Text(
-                text = "⏰ ALARME",
-                fontSize = 26.sp,
-                color = Color.White
-            )
-
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
-
             Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CardFundo)
+                    .padding(16.dp),
+
+                horizontalArrangement = Arrangement.SpaceBetween,
+
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                TextField(
-                    value = horaAlarme,
-                    onValueChange = {
+                Column {
 
-                        horaAlarme = it
-                            .filter { c -> c.isDigit() }
-                            .take(2)
-                    },
-                    label = {
-                        Text("Hora")
-                    },
-                    enabled = !alarmeAtivo,
-                    modifier = Modifier.width(90.dp)
-                )
-
-                Text(
-                    text = " : ",
-                    fontSize = 25.sp,
-                    color = Color.White
-                )
-
-                TextField(
-                    value = minutoAlarme,
-                    onValueChange = {
-
-                        minutoAlarme = it
-                            .filter { c -> c.isDigit() }
-                            .take(2)
-                    },
-                    label = {
-                        Text("Min")
-                    },
-                    enabled = !alarmeAtivo,
-                    modifier = Modifier.width(90.dp)
-                )
-            }
-
-            Spacer(
-                modifier = Modifier.height(12.dp)
-            )
-
-            Row {
-
-                Button(
-                    onClick = {
-
-                        val h = horaAlarme.toIntOrNull()
-                        val m = minutoAlarme.toIntOrNull()
-
-                        if (
-                            h != null &&
-                            m != null &&
-                            h in 0..23 &&
-                            m in 0..59
-                        ) {
-
-                            alarmeAtivo = true
-
-                            Toast.makeText(
-                                context,
-                                "Alarme definido para %02d:%02d"
-                                    .format(h, m),
-                                Toast.LENGTH_SHORT
-                            ).show()
-
-                        } else {
-
-                            Toast.makeText(
-                                context,
-                                "Digite um horário válido",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF22D32A),
-                        contentColor = Color.White
-                    ),
-                    enabled = !alarmeAtivo
-                ) {
-
-                    Text("Ativar")
-                }
-
-                Spacer(
-                    modifier = Modifier.width(10.dp)
-                )
-
-                Button(
-                    onClick = {
-
-                        alarmeAtivo = false
-
-                        Toast.makeText(
-                            context,
-                            "Alarme desativado",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFAF4C5B),
-                        contentColor = Color.White
+                    Text(
+                        text = "PRÓXIMO ALARME",
+                        color = Roxo,
+                        fontSize = 12.sp
                     )
-                ) {
 
-                    Text("Desativar")
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "07:00",
+                        color = Texto,
+                        fontSize = 14.sp
+                    )
+
+                    Text(
+                        text = "Amanhã",
+                        color = TextoSecundario,
+                        fontSize = 12.sp
+                    )
                 }
-            }
-
-            if (alarmeAtivo) {
 
                 Text(
-                    text = "🔔 Alarme ativado",
-                    color = Color.Green,
-                    modifier = Modifier.padding(top = 10.dp)
+                    text = "+",
+                    color = Roxo,
+                    fontSize = 38.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(28.dp))
+
+        Text(
+            text = "SEU FUSO HORÁRIO",
+            color = Texto,
+            fontSize = 12.sp
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(18.dp)
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CardFundo)
+                    .padding(16.dp)
+            ) {
+
+                Text(
+                    text = "Curitiba",
+                    color = Texto,
+                    fontSize = 14.sp
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "BRT · UTC−3",
+                    color = TextoSecundario,
+                    fontSize = 12.sp
                 )
             }
         }
     }
-
 }
 
-// --------------------------------------------------
-// CRONÔMETRO
-// --------------------------------------------------
+// ==================== CRONÔMETRO ====================
 
 @Composable
-fun Cronometro() {
+fun Crono() {
 
     var segundos by remember {
         mutableStateOf(0)
@@ -441,100 +329,172 @@ fun Cronometro() {
         }
     }
 
-    val horas = segundos / 3600
-    val minutos = (segundos % 3600) / 60
-    val seg = segundos % 60
-
     Column(
         modifier = Modifier
-            .background(
-                Color(199, 199, 199, 91)
-            )
             .fillMaxSize()
             .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
-            text = "CRONÔMETRO",
-            fontSize = 24.sp
+            text = if (rodando)
+                "TUN TUN CLOCK · EM ANDAMENTO"
+            else
+                "TUN TUN CLOCK · PRECISÃO",
+
+            color = Roxo,
+            fontSize = 14.sp
         )
 
-        Spacer(
-            modifier = Modifier.height(30.dp)
-        )
+        Spacer(modifier = Modifier.height(14.dp))
 
         Text(
-            text = "%02d:%02d:%02d"
-                .format(horas, minutos, seg),
-            fontSize = 50.sp
+            text = "Cronômetro",
+            color = Texto,
+            fontSize = 15.sp
         )
 
-        Spacer(
-            modifier = Modifier.height(30.dp)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = if (rodando)
+                "Mantenha o foco"
+            else
+                "Pronto para começar",
+
+            color = TextoSecundario,
+            fontSize = 13.sp
         )
 
-        Row {
+        Spacer(modifier = Modifier.height(35.dp))
 
-            Button(
-                onClick = {
-                    rodando = true
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF22D32A),
-                    contentColor = Color.White
-                )
+        Box(
+            modifier = Modifier
+                .size(210.dp)
+                .background(
+                    color = CardFundo,
+                    shape = CircleShape
+                ),
+
+            contentAlignment = Alignment.Center
+        ) {
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Text("Iniciar")
-            }
+                Text(
+                    text = "%02d:%02d:%02d".format(
+                        segundos / 3600,
+                        (segundos % 3600) / 60,
+                        segundos % 60
+                    ),
 
-            Spacer(
-                modifier = Modifier.width(10.dp)
-            )
+                    color = Texto,
+                    fontSize = 28.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = if (rodando)
+                        "em execução"
+                    else
+                        "sem voltas",
+
+                    color = TextoSecundario,
+                    fontSize = 12.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(28.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ) {
 
             Button(
                 onClick = {
                     rodando = false
+                    segundos = 0
                 }
             ) {
 
-                Text("Pausar")
+                Text(
+                    text = "VOLTAR"
+                )
             }
 
-            Spacer(
-                modifier = Modifier.width(10.dp)
-            )
+            Spacer(modifier = Modifier.width(12.dp))
 
             Button(
                 onClick = {
-
-                    rodando = false
-                    segundos = 0
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFAF4C5B),
-                    contentColor = Color.White
-                )
+                    rodando = !rodando
+                }
             ) {
 
-                Text("Zerar")
+                Text(
+                    text = if (rodando)
+                        "PAUSAR"
+                    else
+                        "▶ INICIAR"
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(35.dp))
+
+        Text(
+            text = "ÚLTIMA VOLTA",
+            color = Texto,
+            fontSize = 12.sp
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CardFundo)
+                    .padding(16.dp),
+
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Text(
+                    text = "Volta 1",
+                    color = TextoSecundario,
+                    fontSize = 12.sp
+                )
+
+                Text(
+                    text = "%02d:%02d".format(
+                        segundos / 60,
+                        segundos % 60
+                    ),
+
+                    color = Texto,
+                    fontSize = 12.sp
+                )
             }
         }
     }
-
 }
 
-// --------------------------------------------------
-// TIMER
-// --------------------------------------------------
+// ==================== TIMER ====================
 
 @Composable
 fun Timer() {
 
-    var minutosInput by remember {
-        mutableStateOf("")
+    var minutos by remember {
+        mutableStateOf("15")
     }
 
     var segundos by remember {
@@ -545,145 +505,180 @@ fun Timer() {
         mutableStateOf(false)
     }
 
-// --------------------------------------------------
-// CONTAGEM REGRESSIVA
-// --------------------------------------------------
-
     LaunchedEffect(rodando) {
 
-        while (rodando && segundos > 0) {
+        while (rodando) {
 
             delay(1000)
 
-            segundos--
-        }
+            if (minutos.toIntOrNull() == 0 && segundos == 0) {
 
-        if (segundos == 0) {
+                rodando = false
 
-            rodando = false
+            } else if (segundos > 0) {
+
+                segundos--
+
+            } else {
+
+                minutos = (
+                        (minutos.toIntOrNull() ?: 1) - 1
+                        ).toString()
+
+                segundos = 59
+            }
         }
     }
 
     Column(
         modifier = Modifier
-            .background(
-                Color(143, 153, 162, 60)
-            )
             .fillMaxSize()
             .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Text(
-            text = "TIMER",
-            fontSize = 24.sp
+            text = "TUN TUN CLOCK · TIMER",
+            color = Roxo,
+            fontSize = 14.sp
         )
 
-        Spacer(
-            modifier = Modifier.height(30.dp)
-        )
+        Spacer(modifier = Modifier.height(14.dp))
 
         Text(
-            text = "%02d:%02d".format(
-                segundos / 60,
-                segundos % 60
-            ),
-            fontSize = 55.sp
+            text = "Timer",
+            color = Texto,
+            fontSize = 15.sp
         )
 
-        Spacer(
-            modifier = Modifier.height(20.dp)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Escolha uma duração",
+            color = TextoSecundario,
+            fontSize = 13.sp
         )
 
-        TextField(
-            value = minutosInput,
-            onValueChange = {
+        Spacer(modifier = Modifier.height(25.dp))
 
-                minutosInput = it
-                    .filter { c -> c.isDigit() }
-            },
-            label = {
-                Text("Minutos")
-            },
-            enabled = !rodando
-        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(18.dp)
+        ) {
 
-        Spacer(
-            modifier = Modifier.height(20.dp)
-        )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(CardFundo)
+                    .padding(25.dp),
 
-        Row {
-
-            Button(
-                onClick = {
-
-                    val minutos =
-                        minutosInput.toIntOrNull() ?: 0
-
-                    if (minutos > 0) {
-
-                        segundos = minutos * 60
-                        rodando = true
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF22D32A),
-                    contentColor = Color.White
-                ),
-                enabled = !rodando
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                Text("Iniciar")
-            }
+                Text(
+                    text = "%02d:%02d:00".format(
+                        minutos.toIntOrNull() ?: 0,
+                        segundos
+                    ),
 
-            Spacer(
-                modifier = Modifier.width(10.dp)
-            )
-
-            Button(
-                onClick = {
-                    rodando = false
-                },
-                enabled = rodando
-            ) {
-
-                Text("Pausar")
-            }
-
-            Spacer(
-                modifier = Modifier.width(10.dp)
-            )
-
-            Button(
-                onClick = {
-
-                    rodando = false
-                    segundos = 0
-                    minutosInput = ""
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFAF4C5B),
-                    contentColor = Color.White
+                    color = Texto,
+                    fontSize = 20.sp
                 )
-            ) {
 
-                Text("Zerar")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "horas · minutos · segundos",
+                    color = TextoSecundario,
+                    fontSize = 11.sp
+                )
             }
         }
 
-        if (
-            !rodando &&
-            segundos == 0 &&
-            minutosInput.isNotEmpty()
+        Spacer(modifier = Modifier.height(25.dp))
+
+        Text(
+            text = "ATALHOS",
+            color = Texto,
+            fontSize = 12.sp
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.Center
+        ) {
+
+            Button(
+                onClick = {
+                    minutos = "5"
+                    segundos = 0
+                }
+            ) {
+                Text("5 MIN")
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    minutos = "10"
+                    segundos = 0
+                }
+            ) {
+                Text("10 MIN")
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                onClick = {
+                    minutos = "15"
+                    segundos = 0
+                }
+            ) {
+                Text("15 MIN")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        OutlinedTextField(
+            value = minutos,
+
+            onValueChange = {
+                minutos = it
+            },
+
+            label = {
+                Text("Minutos")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                rodando = !rodando
+            }
         ) {
 
             Text(
-                text = "⏰ TEMPO ESGOTADO!",
-                fontSize = 20.sp,
-                modifier = Modifier.padding(20.dp)
+                text = if (rodando)
+                    "PAUSAR"
+                else
+                    "▶ INICIAR"
             )
         }
-    }
 
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "O timer tocará quando chegar a zero.",
+            color = TextoSecundario,
+            fontSize = 11.sp,
+            textAlign = TextAlign.Center
+        )
+    }
 }
